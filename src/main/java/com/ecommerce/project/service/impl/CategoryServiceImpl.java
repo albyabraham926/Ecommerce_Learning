@@ -58,13 +58,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category updateCategory(Category category, Long categoryId) {
-
-//        Optional<Category> optionalCategory = categories.stream().filter(x -> x.getCategoryId().equals(categoryId)).findFirst();
-//        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
-
         Category savedCategory = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category","CategoryId",categoryId));
 
-//        categoryToUpdate.setCategoryName(category.getCategoryName());
         category.setCategoryId(categoryId);
         savedCategory = categoryRepository.save(category);
         return savedCategory;

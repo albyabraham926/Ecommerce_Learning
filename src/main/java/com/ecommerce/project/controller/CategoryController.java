@@ -34,23 +34,14 @@ public class CategoryController {
 
     @DeleteMapping("/admin/deleteCategories/{categoryId}")
     public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId){
-        try {
             String status = categoryService.deleteCategory(categoryId);
-//            return new ResponseEntity<>(status, HttpStatus.OK); // valid
             return ResponseEntity.status(HttpStatus.OK).body(status);
-        } catch (ResponseStatusException e) {
-            return new ResponseEntity<>(e.getReason(), e.getStatusCode());
-        }
     }
 
     @PutMapping("/admin/updateCategories/{categoryId}")
-    public ResponseEntity<String> updateCategory(@RequestBody Category category,@PathVariable Long categoryId){
-        try{
+    public ResponseEntity<String> updateCategory(@Valid @RequestBody Category category,@PathVariable Long categoryId){
             Category updateCategory = categoryService.updateCategory(category,categoryId);
             return ResponseEntity.status(HttpStatus.OK).body("Category Updated for the id : "+categoryId);
-        } catch (ResponseStatusException e) {
-        return new ResponseEntity<>(e.getReason(), e.getStatusCode());
-        }
-    }
 
+    }
 }

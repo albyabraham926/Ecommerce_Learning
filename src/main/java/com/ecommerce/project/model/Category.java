@@ -1,22 +1,25 @@
 package com.ecommerce.project.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-//@Entity
-@Entity(name = "categories") // name field will help to map with the class with the mentioned Table name , otherwise simple class name will be the Tbale name by default
+
+@Entity(name = "categories")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // this will automatic generate unique id value for this column when new record inserted, no need to maintain manual
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long categoryId;
 
-//    @Column(name="Name")
+    @NotBlank
+    @Size(min = 5,message = "CategoryName must contain atLeast 5 characters") // if message is not specified then default message is shown ->  example : "size must be between 5 and 2147483647"
     private String categoryName;
 
 }

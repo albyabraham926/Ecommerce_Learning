@@ -21,6 +21,13 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    @GetMapping("/echo")
+    // public ResponseEntity<String> echoMessage(@RequestParam(name = "message",defaultValue = "Default message we set in code")
+    public ResponseEntity<String> echoMessage(@RequestParam(name = "message",required = false) String message){
+        return new ResponseEntity<>("Echoed Message: "+message,HttpStatus.OK
+        );
+    }
+
 //    @RequestMapping(value = "/public/categories", method = RequestMethod.GET) below is the same as this annotation
     @GetMapping("/public/categories")
     public ResponseEntity<CategoryResponse> getAllCategories(){

@@ -9,20 +9,15 @@ import com.ecommerce.project.repository.CategoryRepository;
 import com.ecommerce.project.service.CategoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
-
-//    private List<Category> categories = new ArrayList<Category>();
-//    private Long id=0L;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -31,22 +26,30 @@ public class CategoryServiceImpl implements CategoryService {
     private ModelMapper modelMapper;
 
     @Override
-    public CategoryResponse getAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
+    public CategoryResponse getAllCategories(Integer pageNumber,Integer pageSize) {
+
+        Pageable pageDetails = PageRequest.of(pageNumber,pageSize);
+        Page<Category> categoryPage = categoryRepository.findAll(pageDetails);
+//        List<Category> categories = categoryPage.stream().toList();
+        List<Category> categories = categoryPage.getContent();
         if(categories.isEmpty())
             throw new APIException("No Category is Present in the List As of Now");
         List<CategoryDTO> categoryDTOS = categories.stream().map(x -> modelMapper.map(x, CategoryDTO.class)).toList();
 
         CategoryResponse categoryResponse = new CategoryResponse();
         categoryResponse.setContent(categoryDTOS);
+        categoryResponse.setPageNumber(categoryPage.getNumber());
+        categoryResponse.setPageSize(categoryPage.getSize());
+        categoryResponse.setTotalPages(categoryPage.getTotalPages());
+        categoryResponse.setTotalElements(categoryPage.getTotalElements());
+        categoryResponse.setLastPage(categoryPage.isLast());
+
         return categoryResponse;
     }
 
     @Override
     public CategoryDTO createCategory(CategoryDTO categoryDTO) {
-//        id++;
-//        category.setCategoryId(id);
-//        categories.add(category);
+
         Category category = modelMapper.map(categoryDTO,Category.class);
         Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
         if(savedCategory != null)

@@ -7,9 +7,11 @@ import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.payload.ProductResponse;
 import com.ecommerce.project.repository.CategoryRepository;
 import com.ecommerce.project.repository.ProductRepository;
+import com.ecommerce.project.service.FileService;
 import com.ecommerce.project.service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,6 +34,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private FileService fileService;
+
+    @Value("${project.image}") // this will get the value from application.properties
+    private String path;
 
     @Override
     public ProductDTO addProduct(Long categoryId, ProductDTO productDTO) {
@@ -103,37 +111,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO updateProductImage(Long productId, MultipartFile image) throws IOException {
-        // Get product from db\
         Product productFromDB = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product","productId",productId));
 
-        // upload image to server
-        // FileName of uploaded image.
-        String path = "images/";
-        String fileName = uploadImage(path,image);
-
-        // updating the new file name to the product.
+        String fileName = fileService.uploadImage(path,image);
         productFromDB.setImage(fileName);
-        // return DTO after mapping product to DTO
         Product updatedProduct = productRepository.save(productFromDB);
         return modelMapper.map(updatedProduct,ProductDTO.class);
     }
 
-    private String uploadImage(String path, MultipartFile file) throws IOException {
-        // Filename of current/original file.
-        String originalFileName = file.getOriginalFilename();
-        System.out.println("originalFileName :::: "+originalFileName);
-        // Generate the file name uniquely
-        String randomId = UUID.randomUUID().toString();
-        String fileName = randomId.concat(originalFileName.substring(originalFileName.lastIndexOf('.')));
-        String filePath = path + File.separator + fileName;
-        // check if path exists and create
-        File folder = new File(path);
-        if(!folder.exists())
-            folder.mkdir();
-        // Upload to server.
-        Files.copy(file.getInputStream(), Paths.get(filePath));
-        // return the filename
 
-        return fileName;
-    }
 }

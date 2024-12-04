@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 
 @Entity(name = "categories")
 @Data
@@ -21,5 +23,8 @@ public class Category {
     @NotBlank
     @Size(min = 5,message = "CategoryName must contain atLeast 5 characters") // if message is not specified then default message is shown ->  example : "size must be between 5 and 2147483647"
     private String categoryName;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    private List<Product> products;
 
 }

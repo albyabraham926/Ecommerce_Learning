@@ -6,9 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @AllArgsConstructor
@@ -39,6 +37,7 @@ public class User {
 
     @NotBlank
     @Size(max = 120)
+    @Column(name = "password")
     private String password;
 
     public User(String userName, String email, String password) {
@@ -55,6 +54,19 @@ public class User {
                 joinColumns = @JoinColumn(name = "user_id"),
                 inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    @Getter
+    @Setter
+    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinTable(name = "user_address",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "address_id")) // user is the owner of this relationShip
+    private List<Address> addresses = new ArrayList<>();
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST,CascadeType.MERGE},orphanRemoval = true)
+    private Set<Product> products;
+
 
     @Override
     public int hashCode(){

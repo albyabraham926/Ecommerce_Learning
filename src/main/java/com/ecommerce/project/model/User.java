@@ -1,15 +1,14 @@
 package com.ecommerce.project.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -19,6 +18,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long userId;
 
     @NotBlank
@@ -38,5 +38,19 @@ public class User {
         this.userName = userName;
         this.email = email;
         this.password = password;
+    }
+
+    @Getter
+    @Setter
+    @ManyToMany(cascade = {CascadeType.PERSIST , CascadeType.MERGE},
+    fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role",
+                joinColumns = @JoinColumn(name = "user_id"),
+                inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(userId);
     }
 }

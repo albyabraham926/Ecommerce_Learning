@@ -20,7 +20,7 @@ public class Role {
 
     @ToString.Exclude
     @Enumerated(EnumType.STRING) // by default enum will be stored as integer in database so that's why we specified this enum type
-    @Column(length = 8,name = "role_name")
+    @Column(length = 20,name = "role_name")
     private AppRole roleName;
 
     public Role(AppRole roleName) {
